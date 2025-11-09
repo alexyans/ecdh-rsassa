@@ -153,5 +153,42 @@ int main(int argc, char *argv[])
     printf("Are they equal? %b\n", memcmp(alice_shared_secret, bob_shared_secret, sizeof(alice_shared_secret)) == 0);
   */
 
+    // compute symmetric key
+    unsigned char alice_enc_key[crypto_scalarmult_BYTES], bob_enc_key[crypto_scalarmult_BYTES];
+    char alice_enc_key_hex[crypto_scalarmult_BYTES*64], bob_enc_key_hex[crypto_scalarmult_BYTES*64];
+    const int SIZE_ENCRYPTION_KEY = 32,
+	  SIZE_MAC_KEY = 32;
+
+    if (crypto_kdf_derive_from_key(alice_enc_key, SIZE_ENCRYPTION_KEY, 0, "ECDH_KDF", alice_shared_secret) != 0) {
+	fputs("Error: Failed to generate Alice's encryption key.\n", stderr);
+        exit(1);
+    }
+    if (crypto_kdf_derive_from_key(bob_enc_key, SIZE_ENCRYPTION_KEY, 0, "ECDH_KDF", bob_shared_secret) != 0) {
+	fputs("Error: Failed to generate Bob's encryption key.\n", stderr);
+        exit(1);
+    }
+
+    // convert to hex
+    res = NULL;
+    res = sodium_bin2hex(alice_enc_key_hex, SIZE_ENCRYPTION_KEY*2+1, alice_enc_key, crypto_scalarmult_BYTES);
+    if (res == NULL) {
+	fputs("Error: Failed to convert Alice's shared encryption key from binary to hex.\n", stderr);
+        exit(1);
+    }
+
+    res = NULL;
+    res = sodium_bin2hex(bob_enc_key_hex, SIZE_ENCRYPTION_KEY*2+1, bob_enc_key, crypto_scalarmult_BYTES);
+    if (res == NULL) {
+	fputs("Error: Failed to convert Bob's shared encryption key from binary to hex.\n", stderr);
+        exit(1);
+    }
+/*
+    printf("Alice encryption key: %s\n", alice_enc_key);
+    printf("Alice encryption key: %s\n", alice_enc_key_hex);
+    printf("Bob encryption key: %s\n", bob_enc_key);
+    printf("Bob encryption key: %s\n", bob_enc_key_hex);
+    printf("Are they equal? %b\n", memcmp(alice_enc_key, bob_enc_key, SIZE_ENCRYPTION_KEY) == 0);
+*/
+
     return 0;
 }
