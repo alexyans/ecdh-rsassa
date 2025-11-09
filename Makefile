@@ -2,6 +2,10 @@ CC=gcc
 CFLAGS=-Wall -g
 LIBS=-lsodium
 
+# Normally runs inside dev container
+ecdh:
+	$(CC) $(CFLAGS) ecdh.c -o ecdh $(LIBS)
+
 up:
 	@docker compose up -d
 .PHONY: up
@@ -13,10 +17,6 @@ down:
 shell:
 	@docker compose exec local bash
 .PHONY: shell
-
-# Runs inside dev container
-ecdh:
-	$(CC) $(CFLAGS) ecdh.c -o ecdh $(LIBS)
 
 clean:
 	rm -f *.o output 
