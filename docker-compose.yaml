@@ -1,0 +1,6 @@
+services:
+  local:
+    image: ubuntu
+    volumes:
+      - .:/app
+    command: ["/app/run"]
