@@ -16,9 +16,10 @@ Usage: %s [OPTION]\n\
     fputs ("\
 Perform an Elliptic-Curve Diffie-Hellman key exchange.\n\
 \n\
+  -o                       path to output file\n\
   -h                       show this help message\n\
 ", stdout);
-    
+
     return;
 }
  
@@ -30,6 +31,7 @@ Perform an Elliptic-Curve Diffie-Hellman key exchange.\n\
   -s, --squeeze-blank      suppress repeated empty output lines\n\
   */
 
+
 int main(int argc, char *argv[])
 {
     if (argc < 3)
@@ -39,7 +41,8 @@ int main(int argc, char *argv[])
     }
 
     int opt;
-    while ((opt = getopt (argc, argv, "h")) != -1)
+    char *output_path;
+    while ((opt = getopt (argc, argv, "ho:")) != -1)
     {
       switch (opt)
         {
@@ -91,6 +94,10 @@ int main(int argc, char *argv[])
         //case_GETOPT_HELP_CHAR;
 
         //case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
+
+	case 'o':
+	  output_path = optarg;
+	  break;
 
 	case 'h':
         default:
