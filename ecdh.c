@@ -16,9 +16,9 @@ Usage: %s [OPTION]...\n\
 Perform an Elliptic-Curve Diffie-Hellman key exchange.\n\
 \n\
   -o [filename]            path to output file (default: prints to stdout)\n\
-  -a [integer]             alice's private key\n\
-  -b [integer]             bob's private key\n\
-  -c [string]              context string for key derivation\n\
+  -a [integer]             alice's private key (default: random)\n\
+  -b [integer]             bob's private key (default: random)\n\
+  -c [string]              context string for key derivation (default: ECDH_KDF)\n\
   -h                       show this help message\n\
 ", stdout);
 
@@ -46,6 +46,11 @@ int main(int argc, char *argv[])
     uint32_t alice_pk_int, bob_pk_int; // TODO: set defaults
     unsigned char alice_pk_bytes[crypto_scalarmult_BYTES], bob_pk_bytes[crypto_scalarmult_BYTES];
     char *context = "ECDH_KDF";
+
+    // random defaults
+    randombytes_buf(alice_pk_bytes, crypto_scalarmult_BYTES);
+    randombytes_buf(bob_pk_bytes, crypto_scalarmult_BYTES);
+
     while ((opt = getopt (argc, argv, "ho:a:b:c:")) != -1)
     {
       switch (opt)
@@ -232,5 +237,6 @@ int main(int argc, char *argv[])
     is_match = memcmp(alice_mac_key, bob_mac_key, sizeof(SIZE_MAC_KEY)) == 0;
     fprintf(fd, "MAC keys %smatch!\n\n", is_match? "": "do not ");
 
+    fclose(fd);
     return 0;
 }
