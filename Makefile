@@ -14,7 +14,7 @@ shell:
 
 # Runs inside dev container
 ecdh:
-	gcc ecdh.c ecdh
+	gcc ecdh.c -o ecdh -lsodium
 
 server: server.c
 	$(CC) $(CFLAGS) -o server server.c $(LIBS)

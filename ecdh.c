@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <sodium.h>
 
 const char* TOOL_NAME = "ecdh";
 
@@ -25,6 +26,12 @@ Perform an Elliptic-Curve Diffie-Hellman key exchange.\n\
  
 int main(int argc, char *argv[])
 {
+    if (sodium_init() == -1)
+    {
+	fputs("Error: Failed to initalize sodium.\n", stderr);
+        exit(1);
+    }
+
     if (argc < 3)
     {
         usage();
