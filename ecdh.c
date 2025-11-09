@@ -75,6 +75,7 @@ int main(int argc, char *argv[])
     unsigned char bob_pub[crypto_scalarmult_BYTES];
     char alice_pub_hex[crypto_scalarmult_BYTES*64];
     char bob_pub_hex[crypto_scalarmult_BYTES*64];
+    // scalar * base point on Curve25519 = point on Curve25519
     if (crypto_scalarmult_base(alice_pub, alice_pk_bytes) != 0) {
 	fputs("Error: Failed to generate Alice's public key.\n", stderr);
         exit(1);
@@ -92,7 +93,6 @@ int main(int argc, char *argv[])
     }
     res = NULL;
     res = sodium_bin2hex(bob_pub_hex, crypto_scalarmult_BYTES*64, bob_pub, crypto_scalarmult_BYTES);
-//return 0;
     if (res == NULL) {
 	fputs("Error: Failed to convert Bob's public key from binary to hex.\n", stderr);
         exit(1);
@@ -114,6 +114,44 @@ int main(int argc, char *argv[])
     printf("Bob priv: %s\n", bob_pub);
     printf("Bob pub: %s\n", bob_pub_hex);
   */ 
+
+    // compute shared keys
+    unsigned char alice_shared_secret[crypto_scalarmult_BYTES], bob_shared_secret[crypto_scalarmult_BYTES];
+    char alice_shared_secret_hex[crypto_scalarmult_BYTES*64], bob_shared_secret_hex[crypto_scalarmult_BYTES*64];
+
+    // scalar * point on Curve25519 = point on Curve25519
+    if (crypto_scalarmult(alice_shared_secret, alice_pk_bytes, bob_pub) != 0) {
+	fputs("Error: Failed to generate Alice's shared secret.\n", stderr);
+        exit(1);
+    }
+    if (crypto_scalarmult(bob_shared_secret, bob_pk_bytes, alice_pub) != 0) {
+	fputs("Error: Failed to generate Bob's shared secret.\n", stderr);
+        exit(1);
+    }
+
+    // convert to hex
+    res = NULL;
+    res = sodium_bin2hex(alice_shared_secret_hex, crypto_scalarmult_BYTES*64, alice_shared_secret, crypto_scalarmult_BYTES);
+    if (res == NULL) {
+	fputs("Error: Failed to convert Alice's shared secret from binary to hex.\n", stderr);
+        exit(1);
+    }
+
+    res = NULL;
+    res = sodium_bin2hex(bob_shared_secret_hex, crypto_scalarmult_BYTES*64, bob_shared_secret, crypto_scalarmult_BYTES);
+//return 0;
+    if (res == NULL) {
+	fputs("Error: Failed to convert Bob's shared secret from binary to hex.\n", stderr);
+        exit(1);
+    }
+
+  /*
+    printf("Alice shared secret: %s\n", alice_shared_secret);
+    printf("Alice shared secret: %s\n", alice_shared_secret_hex);
+    printf("Bob shared secret: %s\n", bob_shared_secret);
+    printf("Bob shared secret: %s\n", bob_shared_secret_hex);
+    printf("Are they equal? %b\n", memcmp(alice_shared_secret, bob_shared_secret, sizeof(alice_shared_secret)) == 0);
+  */
 
     return 0;
 }
