@@ -40,6 +40,7 @@ int main(int argc, char *argv[])
     }
 
     int opt;
+    char *buf;
     char *path;
     FILE *fd = stdout;
     uint32_t alice_pk_int, bob_pk_int; // TODO: set defaults
@@ -54,12 +55,24 @@ int main(int argc, char *argv[])
 	  break;
 
 	case 'a':
-	  sscanf(optarg, "%u", &alice_pk_int);
+	  buf = optarg;
+	  // keys are nonnegative decimal integers
+	  sscanf(buf, "%u", &alice_pk_int);
+	  // unless 0x prefixed
+	  if (buf[0]=='0' && buf[1]=='x') {
+	      sscanf(buf, "%x", &alice_pk_int);
+	  }
           memcpy(alice_pk_bytes, &alice_pk_int, 4);
 	  break;
 
 	case 'b':
-	  sscanf(optarg, "%u", &bob_pk_int);
+	  buf = optarg;
+	  // keys are nonnegative decimal integers
+	  sscanf(buf, "%u", &bob_pk_int);
+	  // unless 0x prefixed
+	  if (buf[0]=='0' && buf[1]=='x') {
+	      sscanf(buf, "%x", &bob_pk_int);
+	  }
           memcpy(bob_pk_bytes, &bob_pk_int, 4);
 	  break;
 
@@ -143,7 +156,7 @@ int main(int argc, char *argv[])
         exit(1);
     }
 
-    fprintf(fd, "Shared Secret (Alice)::\n\n%s\n\n", alice_shared_secret_hex);
+    fprintf(fd, "Shared Secret (Alice):\n\n%s\n\n", alice_shared_secret_hex);
     fprintf(fd, "Shared Secret (Bob):\n\n%s\n\n", bob_shared_secret_hex);
 
     bool is_match = memcmp(alice_shared_secret, bob_shared_secret, sizeof(alice_shared_secret)) == 0;
@@ -179,7 +192,7 @@ int main(int argc, char *argv[])
         exit(1);
     }
 
-    fprintf(fd, "Derived Encryption Key (Alice)::\n\n%s\n\n", alice_enc_key_hex);
+    fprintf(fd, "Derived Encryption Key (Alice):\n\n%s\n\n", alice_enc_key_hex);
     fprintf(fd, "Derived Encryption Key (Bob):\n\n%s\n\n", bob_enc_key_hex);
 
     is_match = memcmp(alice_enc_key, bob_enc_key, sizeof(SIZE_ENCRYPTION_KEY)) == 0;
