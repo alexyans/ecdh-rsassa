@@ -1,6 +1,9 @@
+version: "3"
 services:
   local:
     image: ubuntu
+    container_name: devdemo
+    tty: true
+    stdin_open: true
     volumes:
       - .:/app
-    command: ["/app/run"]

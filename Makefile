@@ -4,6 +4,18 @@ LIBS=-lssl -lcrypto
 
 all: server client rclient
 
+up:
+	@docker compose up -d
+.PHONY: up
+
+shell:
+	@docker compose exec local bash
+.PHONY: shell
+
+# Runs inside dev container
+ecdh:
+	gcc ecdh.c ecdh
+
 server: server.c
 	$(CC) $(CFLAGS) -o server server.c $(LIBS)
 
